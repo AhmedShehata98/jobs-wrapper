@@ -4,20 +4,20 @@ import React from "react";
 
 function JobCard({ job }: { job: JobResult }) {
   return (
-    <div className="flex items-start justify-start gap-3 p-3 bg-zinc-50 shadow-xs rounded-sm border border-gray-300">
-      <figure className="size-16 rounded-md overflow-hidden shrink-0">
+    <div className="flex items-start justify-start flex-col lg:flex-row gap-3 p-3 bg-zinc-50 shadow-xs rounded-sm border border-gray-300">
+      <figure className="size-20 lg:size-16 rounded-md border border-gray-200 overflow-hidden shrink-0">
         <img
           src={job.companyLogo || "https://placehold.co/100"}
           alt="https://placehold.co/400"
         />
       </figure>
       <div className="flex-1 flex flex-col items-start justify-start">
-        <span className="w-full flex items-center justify-between mb-3">
+        <span className="w-full flex items-center justify-between mb-3 max-md:flex-wrap max-md:gap-5">
           <span className="flex items-start justify-start gap-1 flex-col">
             <h3 className="font-medium text-base capitalize text-gray-800">
               {job.opportunityTitle}
             </h3>
-            <span className="flex items-center justify-start gap-1.5">
+            <span className="flex items-center justify-start gap-1.5 max-lg:flex-wrap">
               <p className="text-brand font-medium text-base">{job.company}</p>
               <p className="text-gray-400 font-normal text-sm">
                 {job.companyLocation}
@@ -58,7 +58,7 @@ function JobCard({ job }: { job: JobResult }) {
             <Link
               href={job.link}
               target="_blank"
-              className="bg-brand text-white font-medium capitalize px-3.5 py-1.5 text-sm rounded-sm hover:brightness-75"
+              className="bg-brand text-white font-medium capitalize px-8 py-1.5 text-sm rounded-sm hover:brightness-75"
             >
               التقديم الان
             </Link>

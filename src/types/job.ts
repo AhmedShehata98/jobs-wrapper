@@ -15,3 +15,9 @@ export interface JobResult {
   companyLogo?: string;
   companyLocation: string;
 }
+
+export type JobResponse = {
+  message: string;
+  jobsFilters: string[];
+  jobs: JobResult[];
+};

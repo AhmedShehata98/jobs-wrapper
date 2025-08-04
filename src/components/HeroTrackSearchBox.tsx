@@ -38,7 +38,8 @@ function HeroTrackSearchBox() {
       <Button
         type="submit"
         size="lg"
-        className="w-full flex items-center justify-center gap-2 shrink-0 md:w-auto px-8 py-4 text-lg h-14 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-colors duration-300 shadow-lg"
+        className="w-full flex items-center justify-center gap-2 shrink-0 md:w-auto px-8 py-4 text-lg h-14 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-colors duration-300 shadow-lg cursor-pointer disabled:bg-gray-400 disabled:text-gray-500"
+        disabled={track.trim() === ""}
       >
         <Search className="w-5 h-5 mr-3" />
         Start Tracking

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const Footer = () => {
   const navLinks = [
-    { name: "Home", href: "#home" },
+    { name: "Home", href: "/#home" },
     { name: "Features", href: "#features" },
     { name: "Sources", href: "#sources" },
     { name: "Contact", href: "#contact" },

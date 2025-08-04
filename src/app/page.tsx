@@ -2,6 +2,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Zap, Filter, Globe, Smartphone } from "lucide-react";
 import Image from "next/image";
 import HeroTrackSearchBox from "@/components/HeroTrackSearchBox";
+import { Suspense } from "react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Jobs Wrapper - Find Your Dream Job",
+  description:
+    "Search all leading job boards in one place and find the opportunity that matches your skills and ambitions.",
+};
 
 export default function JobHunterLanding() {
   return (
@@ -40,31 +48,15 @@ export default function JobHunterLanding() {
             </div>
 
             {/* Search Form */}
-            <HeroTrackSearchBox />
-
-            {/* Stats - Removed as per PRD, but keeping for now if needed later */}
-            {/*
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 max-w-3xl mx-auto">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600 mb-2">
-                  10,000+
-                </div>
-                <div className="text-gray-600">Jobs Available</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-indigo-600 mb-2">
-                  50+
-                </div>
-                <div className="text-gray-600">Job Boards</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600 mb-2">
-                  5,000+
-                </div>
-                <div className="text-gray-600">Happy Developers</div>
-              </div>
-            </div>
-            */}
+            <Suspense
+              fallback={
+                <h4 className=" text-2xl font-medium capitalize text-brand">
+                  please wait ..
+                </h4>
+              }
+            >
+              <HeroTrackSearchBox />
+            </Suspense>
           </div>
         </div>
       </section>
