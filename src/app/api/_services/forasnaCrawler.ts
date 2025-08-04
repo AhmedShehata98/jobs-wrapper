@@ -24,6 +24,7 @@ export const crawlForasnaJobs = async (
   const jobs: JobResult[] = [];
 
   $(".result-wrp").each((_, element) => {
+    console.count("element");
     const title = $(element).find(".job-title a").text().trim();
     const jobType = $(element).find(".job-details :nth-child(3)").text();
     const description = $(element).find(".job-details:last-child").text();
@@ -34,13 +35,14 @@ export const crawlForasnaJobs = async (
     const companyLogo = $(element).find(".company-logo img").attr("src");
     const adDate = parsePostDateText(dateText);
 
-    if (filters.posted_within) {
-      const cutoffDate = dayjs().subtract(
-        postedWithinToDays(filters.posted_within),
-        "day"
-      );
-      if (dayjs(adDate).isBefore(cutoffDate)) return;
-    }
+    console.log("adDate:", adDate);
+    // if (filters.posted_within) {
+    //   const cutoffDate = dayjs().subtract(
+    //     postedWithinToDays(filters.posted_within),
+    //     "day"
+    //   );
+    //   if (dayjs(adDate).isBefore(cutoffDate)) return;
+    // }
 
     const job: JobResult = {
       opportunityTitle: title || "Unknown",

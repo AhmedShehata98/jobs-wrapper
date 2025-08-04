@@ -41,6 +41,7 @@ export async function GET(req: Request) {
       crawlForasnaJobs(filters),
       crawlJobzella(filters),
     ]);
+    console.log("jobs:", jobs);
 
     return NextResponse.json(
       {
