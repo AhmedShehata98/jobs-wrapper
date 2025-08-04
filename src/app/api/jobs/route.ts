@@ -6,6 +6,12 @@ import { crawlJobzella } from "@/app/api/_services/jobzillaCrawler";
 import type { JobResult } from "@/types/job";
 
 export async function GET(req: Request) {
+  if (typeof Request === "undefined" || !req.url) {
+    return NextResponse.json(
+      { message: "Invalid execution context" },
+      { status: 400 }
+    );
+  }
   const { searchParams } = new URL(req.url);
 
   const filters: JobFilters = {

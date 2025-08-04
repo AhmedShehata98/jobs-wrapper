@@ -7,10 +7,9 @@ export async function crawlJobzella(
 ): Promise<JobResult[]> {
   // Rest API endpoint for fetching jobzella jobs by query and page number
   // https://www.jobzella.com/_next/data/ml61Qf0ENzd6t3375pjeH/en/search/jobs.json?page=1
-  const endpointUrl =
-    "https://www.jobzella.com/_next/data/ml61Qf0ENzd6t3375pjeH/en/search/jobs.json";
+  const endpointUrl = "/_next/data/ml61Qf0ENzd6t3375pjeH/en/search/jobs.json";
   // const searchUrl = `${baseUrl}${encodeURIComponent(query.track)}&page=1`;
-  const searchUrl = new URL(endpointUrl);
+  const searchUrl = new URL(endpointUrl, "https://www.jobzella.com");
   searchUrl.searchParams.set("page", query.page || "1");
   searchUrl.searchParams.set(
     "keyword",
