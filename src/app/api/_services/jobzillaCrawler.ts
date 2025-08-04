@@ -52,7 +52,28 @@ export async function crawlJobzella(
       };
     });
 
-    return jobs as JobResult[];
+    return jobs.filter((item) => {
+      if (!item.opportunityDate) return false;
+
+      const jobDate = new Date(item.opportunityDate);
+      const currentDate = new Date();
+      const daysDiff = Math.floor(
+        (currentDate.getTime() - jobDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
+      switch (query.posted_within) {
+        case "day":
+          return daysDiff <= 1;
+        case "week":
+          return daysDiff <= 7;
+        case "2weeks":
+          return daysDiff <= 14;
+        case "month":
+          return daysDiff <= 30;
+        default:
+          return true;
+      }
+    }) as JobResult[];
   } catch (err) {
     console.error("Error crawling Jobzella:", err);
     return [];

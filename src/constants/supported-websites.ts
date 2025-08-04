@@ -1,4 +1,6 @@
-export const SUPPORTED_WEBSITES = [
+import { WebsiteType } from "@/types/job";
+
+export const SUPPORTED_WEBSITES: { name: string; value: WebsiteType }[] = [
   {
     name: "Job Zella",
     value: "jobzella",
@@ -12,7 +14,7 @@ export const SUPPORTED_WEBSITES = [
     value: "glassdoor",
   },
   {
-    name: "foransa",
-    value: "foransa",
+    name: "Forasna",
+    value: "forasna",
   },
 ];

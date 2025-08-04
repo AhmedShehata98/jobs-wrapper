@@ -35,15 +35,13 @@ export const crawlForasnaJobs = async (
     const companyLogo = $(element).find(".company-logo img").attr("src");
     const adDate = parsePostDateText(dateText);
 
-    console.log("adDate:", adDate);
-    console.log("dateText:", dateText);
-    // if (filters.posted_within) {
-    //   const cutoffDate = dayjs().subtract(
-    //     postedWithinToDays(filters.posted_within),
-    //     "day"
-    //   );
-    //   if (dayjs(adDate).isBefore(cutoffDate)) return;
-    // }
+    if (filters.posted_within) {
+      const cutoffDate = dayjs().subtract(
+        postedWithinToDays(filters.posted_within),
+        "day"
+      );
+      if (dayjs(adDate).isBefore(cutoffDate)) return;
+    }
 
     const job: JobResult = {
       opportunityTitle: title || "Unknown",
@@ -62,6 +60,7 @@ export const crawlForasnaJobs = async (
       companyLocation: location,
       companyLogo,
     };
+
     jobs.push(job);
   });
 

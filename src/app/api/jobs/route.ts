@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 import { crawlWuzzufJobs } from "@/app/api/_services/wuzzufCrawler";
 import { crawlForasnaJobs } from "@/app/api/_services/forasnaCrawler";
 import { crawlJobzella } from "@/app/api/_services/jobzillaCrawler";
-import type { JobResult } from "@/types/job";
+import type { JobResult, WebsiteType } from "@/types/job";
+import { crawlGlassdoorJobs } from "../_services/glassdoorCrawler";
 
 export async function GET(req: Request) {
   if (typeof Request === "undefined" || !req.url) {
@@ -19,7 +20,7 @@ export async function GET(req: Request) {
     keywords: searchParams.getAll("keywords"),
     location: searchParams.get("location") || undefined,
     experience_level: searchParams.get("experience_level") || undefined,
-    publisher: searchParams.get("publisher") || undefined,
+    publisher: (searchParams.get("publisher") as WebsiteType) || undefined,
     job_type: searchParams.get("job_type") || undefined,
     posted_within:
       (searchParams.get("posted_within") as JobFilters["posted_within"]) ||
@@ -36,24 +37,40 @@ export async function GET(req: Request) {
   }
 
   try {
-    const jobs = await Promise.allSettled([
-      crawlWuzzufJobs(filters),
-      crawlForasnaJobs(filters),
-      crawlJobzella(filters),
-    ]);
-    console.log("jobs:", jobs);
+    let jobs = [];
+    const servicesMap: Record<
+      WebsiteType,
+      (filters: JobFilters) => Promise<JobResult[]>
+    > = {
+      wuzzuf: crawlWuzzufJobs,
+      forasna: crawlForasnaJobs,
+      jobzella: crawlJobzella,
+      glassdoor: crawlGlassdoorJobs,
+    };
+
+    if (filters.publisher && filters.publisher in servicesMap) {
+      const service = servicesMap[filters.publisher as WebsiteType];
+      const jobResults = await service(filters);
+      jobs.push(...jobResults);
+    } else {
+      for (const key in servicesMap) {
+        const service = servicesMap[key as WebsiteType];
+        const jobResults = await service(filters);
+        jobs.push(...jobResults);
+      }
+    }
+
+    if (filters.location) {
+      const newJobs = jobs.filter((i) =>
+        i.companyLocation.match(new RegExp(filters.location || "", "gi"))
+      );
+      jobs = newJobs || [];
+    }
 
     return NextResponse.json(
       {
         message: "jobs collected success",
-        jobsFilters: jobs.map((item) => item.status),
-        jobs: jobs
-          .filter(
-            (result): result is PromiseFulfilledResult<JobResult[]> =>
-              result.status === "fulfilled"
-          )
-          .map((item) => item.value)
-          .flat(),
+        jobs: jobs.filter((item) => item !== null),
       },
       { status: 200 }
     );

@@ -21,3 +21,5 @@ export type JobResponse = {
   jobsFilters: string[];
   jobs: JobResult[];
 };
+
+export type WebsiteType = "wuzzuf" | "glassdoor" | "jobzella" | "forasna";

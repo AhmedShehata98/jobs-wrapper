@@ -20,7 +20,7 @@ function JobSearchBox() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full flex items-center justify-start flex-col md:flex-row gap-2.5 mb-6"
+      className="w-full flex items-center justify-start flex-col md:flex-row gap-2.5"
     >
       {/* Job Track */}
       <div

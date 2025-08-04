@@ -16,20 +16,22 @@ function JobsFilterMenu() {
     const location = fd.get("location");
     const posted_within = fd.get("posted_within");
     const publisher = fd.get("publisher");
-    console.log({
-      location,
-      posted_within,
-      publisher,
-    });
+
     const sp = new URLSearchParams(searchParams.toString());
     if (location) {
       sp.set("location", location as string);
+    } else {
+      sp.delete("location");
     }
     if (posted_within) {
       sp.set("posted_within", posted_within as string);
+    } else {
+      sp.delete("posted_within");
     }
     if (publisher) {
       sp.set("publisher", publisher as string);
+    } else {
+      sp.delete("publisher");
     }
 
     router.push(`?${sp.toString()}`);
