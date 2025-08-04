@@ -24,8 +24,9 @@ export async function crawlJobzella(
     const data = (await res.json()) as JobzellaResponseType;
 
     const jobs = data?.pageProps?.jobs?.map((item) => {
-      const jobApplyLink = new URL(searchUrl.href);
-      jobApplyLink.searchParams.set("selectedJobId", item.id?.toString());
+      const jobApplyLink = `https://www.jobzella.com/search/jobs?page=${
+        query.page || "1"
+      }&selectedJobId=${item.id}`;
 
       return {
         opportunityTitle: `${item.position.name} (${item.workplace_type.name})`,
@@ -45,7 +46,7 @@ export async function crawlJobzella(
           ?.value,
         location: item.location,
         company: item.company.title || item.company.username,
-        link: jobApplyLink.href,
+        link: jobApplyLink,
         companyLogo: item.company.image,
         companyLocation: item.location,
       };

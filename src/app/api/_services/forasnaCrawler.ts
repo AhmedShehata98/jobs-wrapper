@@ -36,6 +36,7 @@ export const crawlForasnaJobs = async (
     const adDate = parsePostDateText(dateText);
 
     console.log("adDate:", adDate);
+    console.log("dateText:", dateText);
     // if (filters.posted_within) {
     //   const cutoffDate = dayjs().subtract(
     //     postedWithinToDays(filters.posted_within),
