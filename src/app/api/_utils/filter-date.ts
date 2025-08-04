@@ -1,5 +1,55 @@
 import dayjs from "dayjs";
 
+export const getDateFromRelativeTime = (relativeTime: string) => {
+  try {
+    const now = new Date();
+
+    // Normalize string
+    const input = relativeTime.trim().toLowerCase();
+
+    // Regex to capture number and unit
+    const match = input.match(
+      /(\d+)\s*(min|minute|minutes|hour|hours|day|days|month|months|year|years)/
+    );
+
+    if (!match) return new Date();
+
+    const amount = parseInt(match[1], 10);
+    const unit = match[2];
+
+    switch (unit) {
+      case "min":
+      case "minute":
+      case "minutes":
+        return new Date(now.getTime() - amount * 60 * 1000);
+
+      case "hour":
+      case "hours":
+        return new Date(now.getTime() - amount * 60 * 60 * 1000);
+
+      case "day":
+      case "days":
+        return new Date(now.getTime() - amount * 24 * 60 * 60 * 1000);
+
+      case "month":
+      case "months":
+        const d1 = new Date(now);
+        d1.setMonth(d1.getMonth() - amount);
+        return d1;
+
+      case "year":
+      case "years":
+        const d2 = new Date(now);
+        d2.setFullYear(d2.getFullYear() - amount);
+        return d2;
+
+      default:
+        return new Date();
+    }
+  } catch (error) {
+    return new Date();
+  }
+};
 export const postedWithinToDays = (range: string): number => {
   switch (range) {
     case "day":

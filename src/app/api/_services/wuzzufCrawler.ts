@@ -1,21 +1,16 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
-import type { JobFilters } from "@/types/JobFilters";
+import type { JobFilters, Pagination } from "@/types/JobFilters";
 import type { JobResult } from "@/types/job";
-import {
-  parsePostDateText,
-  postedWithinToDays,
-} from "@/app/api/_utils/filter-date";
-import dayjs from "dayjs";
 
 const BASE_URL = "https://wuzzuf.net/search/jobs/?a=hpb&q=";
 
 export const crawlWuzzufJobs = async (
-  filters: JobFilters
+  query: {
+    track: string;
+  } & Partial<Pagination>
 ): Promise<JobResult[]> => {
-  const keywordQuery =
-    filters?.keywords?.join(" + ") || filters.track || "software";
-  const url = `${BASE_URL}${encodeURIComponent(keywordQuery)}`;
+  const url = `${BASE_URL}${encodeURIComponent(query.track || "software")}`;
   const { data } = await axios.get(url);
   const $ = cheerio.load(data);
   const jobs: JobResult[] = [];
@@ -65,10 +60,10 @@ export const crawlWuzzufJobs = async (
       websiteLogo: "https://wuzzuf.net/favicon.ico",
       opportunityDescription: description,
       opportunityDate: dateText,
-      track: filters.track || "",
-      keywords: filters.keywords || [],
-      jobType: jobType || filters.job_type || "N/A",
-      experienceLevel: filters.experience_level || "N/A",
+      track: query.track || "",
+      keywords: [query.track],
+      jobType: jobType || query.track || "N/A",
+      experienceLevel: query.track || "N/A",
       // Removed 'publisher' property as it's not defined in JobResult type
       location: jobLocation || location || "N/A",
       company: company.replace("-", ""),
@@ -76,16 +71,6 @@ export const crawlWuzzufJobs = async (
       companyLogo: companyLogo,
       companyLocation: companyLocation,
     };
-
-    const adDate = parsePostDateText(dateText);
-    if (filters.posted_within) {
-      const daysLimit = postedWithinToDays(filters.posted_within);
-      const cutoffDate = dayjs().subtract(daysLimit, "day");
-
-      if (dayjs(adDate).isBefore(cutoffDate)) {
-        return; // ignore the job
-      }
-    }
 
     jobs.push(job);
   });

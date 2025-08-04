@@ -92,7 +92,7 @@ function JobsPage(props: {
 
   return (
     <div className="relative app-container min-h-[calc(100vh-14rem)] max-md:px-6 flex flex-col items-center justify-start">
-      <div className="w-full flex items-center justify-start gap-3 pt-6 mb-6">
+      <div className="w-full flex items-center justify-start gap-3 pt-6 mb-6 max-lg:flex-wrap">
         <JobSearchBox />
         <span className="flex items-center justify-start text-gray-400 font-medium text-sm uppercase gap-2 px-2 py-2 shrink-0">
           <p>{data?.jobs?.length || 0}</p>

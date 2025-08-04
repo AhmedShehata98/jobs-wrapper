@@ -1,24 +1,15 @@
 import type { JobResult } from "@/types/job";
-import type { JobFilters, Pagination } from "@/types/JobFilters";
+import type { Pagination } from "@/types/JobFilters";
 import { JobzellaResponseType } from "@/types/jobzella";
 
 export async function crawlJobzella(
-  query: JobFilters & Partial<Pagination>
+  query: { track: string } & Partial<Pagination>
 ): Promise<JobResult[]> {
-  // Rest API endpoint for fetching jobzella jobs by query and page number
-  // https://www.jobzella.com/_next/data/ml61Qf0ENzd6t3375pjeH/en/search/jobs.json?page=1
   const endpointUrl = "/_next/data/ml61Qf0ENzd6t3375pjeH/en/search/jobs.json";
   // const searchUrl = `${baseUrl}${encodeURIComponent(query.track)}&page=1`;
   const searchUrl = new URL(endpointUrl, "https://www.jobzella.com");
   searchUrl.searchParams.set("page", query.page || "1");
-  searchUrl.searchParams.set(
-    "keyword",
-    encodeURIComponent(
-      query.keywords && query.keywords.length > 0
-        ? query.keywords?.join(" ")
-        : query.track
-    )
-  );
+  searchUrl.searchParams.set("keyword", encodeURIComponent(query.track));
   try {
     const res = await fetch(searchUrl.href);
     const data = (await res.json()) as JobzellaResponseType;
@@ -38,7 +29,7 @@ export async function crawlJobzella(
           .trim(),
         opportunityDate: item.postDate,
         track: item.position.name,
-        keywords: query.keywords || query.track,
+        keywords: [query.track],
         jobType: item.employment_type.name_en || item.employment_type.name_ar,
         experienceLevel: item.aspects.find((i) => i.aspect === "career_level")
           ?.value,
@@ -52,28 +43,7 @@ export async function crawlJobzella(
       };
     });
 
-    return jobs.filter((item) => {
-      if (!item.opportunityDate) return false;
-
-      const jobDate = new Date(item.opportunityDate);
-      const currentDate = new Date();
-      const daysDiff = Math.floor(
-        (currentDate.getTime() - jobDate.getTime()) / (1000 * 60 * 60 * 24)
-      );
-
-      switch (query.posted_within) {
-        case "day":
-          return daysDiff <= 1;
-        case "week":
-          return daysDiff <= 7;
-        case "2weeks":
-          return daysDiff <= 14;
-        case "month":
-          return daysDiff <= 30;
-        default:
-          return true;
-      }
-    }) as JobResult[];
+    return jobs as JobResult[];
   } catch (err) {
     console.error("Error crawling Jobzella:", err);
     return [];

@@ -17,10 +17,13 @@ function Header() {
     { name: "Jobs", href: "/jobs" },
   ];
   return (
-    <header className="bg-white shadow-sm py-4 sticky top-0 z-50">
+    <header className="h-(--header-height) bg-white shadow-sm py-4 sticky top-0 z-50">
       <div className="relative container mx-auto px-6 flex justify-between items-center">
         {/* Logo */}
-        <Link href="/#" className="text-2xl font-bold text-gray-900">
+        <Link
+          href="/#"
+          className="text-lg lg:text-2xl font-bold uppercase text-brand"
+        >
           jobs wrapper
         </Link>
 

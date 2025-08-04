@@ -1,10 +1,11 @@
-import { JobFilters } from "@/types/JobFilters";
+import { JobFilters, Pagination } from "@/types/JobFilters";
 import { NextResponse } from "next/server";
 import { crawlWuzzufJobs } from "@/app/api/_services/wuzzufCrawler";
 import { crawlForasnaJobs } from "@/app/api/_services/forasnaCrawler";
 import { crawlJobzella } from "@/app/api/_services/jobzillaCrawler";
 import type { JobResult, WebsiteType } from "@/types/job";
 import { crawlGlassdoorJobs } from "../_services/glassdoorCrawler";
+import { filterJobsMiddleware } from "../_utils/filter-jobs-middleware";
 
 export async function GET(req: Request) {
   if (typeof Request === "undefined" || !req.url) {
@@ -37,10 +38,9 @@ export async function GET(req: Request) {
   }
 
   try {
-    let jobs = [];
     const servicesMap: Record<
       WebsiteType,
-      (filters: JobFilters) => Promise<JobResult[]>
+      (query: { track: string } & Partial<Pagination>) => Promise<JobResult[]>
     > = {
       wuzzuf: crawlWuzzufJobs,
       forasna: crawlForasnaJobs,
@@ -48,29 +48,22 @@ export async function GET(req: Request) {
       glassdoor: crawlGlassdoorJobs,
     };
 
-    if (filters.publisher && filters.publisher in servicesMap) {
-      const service = servicesMap[filters.publisher as WebsiteType];
-      const jobResults = await service(filters);
-      jobs.push(...jobResults);
-    } else {
-      for (const key in servicesMap) {
-        const service = servicesMap[key as WebsiteType];
-        const jobResults = await service(filters);
-        jobs.push(...jobResults);
-      }
-    }
+    const service = servicesMap[filters.publisher || "wuzzuf"];
+    const jobs = await service({
+      track: filters.track,
+      page: "1",
+      limit: "25",
+    });
 
-    if (filters.location) {
-      const newJobs = jobs.filter((i) =>
-        i.companyLocation.match(new RegExp(filters.location || "", "gi"))
-      );
-      jobs = newJobs || [];
-    }
+    const filteredJobs = filterJobsMiddleware({
+      filters,
+      jobs: jobs.filter((item) => item !== null),
+    });
 
     return NextResponse.json(
       {
         message: "jobs collected success",
-        jobs: jobs.filter((item) => item !== null),
+        jobs: filteredJobs,
       },
       { status: 200 }
     );

@@ -1,11 +1,6 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
-import dayjs from "dayjs";
-import {
-  parsePostDateText,
-  postedWithinToDays,
-} from "@/app/api/_utils/filter-date";
-import type { JobFilters } from "@/types/JobFilters";
+import type { JobFilters, Pagination } from "@/types/JobFilters";
 import type { JobResult } from "@/types/job";
 
 const BASE_URL = `https://forasna.com/${encodeURIComponent(
@@ -13,11 +8,11 @@ const BASE_URL = `https://forasna.com/${encodeURIComponent(
 )}?query=`;
 
 export const crawlForasnaJobs = async (
-  filters: JobFilters
+  query: {
+    track: string;
+  } & Partial<Pagination>
 ): Promise<JobResult[]> => {
-  const keywordQuery =
-    filters.keywords?.join(" + ") || filters.track || "software";
-  const url = `${BASE_URL}${encodeURIComponent(keywordQuery)}`;
+  const url = `${BASE_URL}${encodeURIComponent(query.track || "software")}`;
 
   const { data } = await axios.get(url);
   const $ = cheerio.load(data);
@@ -33,27 +28,17 @@ export const crawlForasnaJobs = async (
     const link = $(element).find(".job-title a").attr("href");
     const company = $(element).find(".company-name a span").text();
     const companyLogo = $(element).find(".company-logo img").attr("src");
-    const adDate = parsePostDateText(dateText);
-
-    if (filters.posted_within) {
-      const cutoffDate = dayjs().subtract(
-        postedWithinToDays(filters.posted_within),
-        "day"
-      );
-      if (dayjs(adDate).isBefore(cutoffDate)) return;
-    }
 
     const job: JobResult = {
       opportunityTitle: title || "Unknown",
       websiteName: "Forasna",
       websiteLogo: "https://forasna.com/favicon.ico",
       opportunityDescription: description,
-      opportunityDate: dateText || filters.posted_within || "N/A",
-      track: filters.track || "",
-      keywords: filters.keywords || [],
-      jobType: jobType || filters.job_type || "N/A",
-      experienceLevel: filters.experience_level || "N/A",
-      // Removed 'publisher' property as it's not defined in JobResult type
+      opportunityDate: dateText || "N/A",
+      track: query.track || "",
+      keywords: [query.track],
+      jobType: jobType || "N/A",
+      experienceLevel: "N/A",
       location: location || "N/A",
       link,
       company: company || "N/A",

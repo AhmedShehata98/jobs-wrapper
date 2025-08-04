@@ -3,7 +3,7 @@ import { SUPPORTED_WEBSITES } from "@/constants/supported-websites";
 import clsx from "clsx";
 import { ListFilter, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function JobsFilterMenu() {
   const searchParams = useSearchParams();
@@ -35,12 +35,21 @@ function JobsFilterMenu() {
     }
 
     router.push(`?${sp.toString()}`);
+    setOpenFilter(false);
   };
+
+  useEffect(() => {
+    if (openFilter) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [openFilter]);
   return (
     <>
       <aside
         className={clsx(
-          "max-md:absolute max-md:top-0 max-md:left-0 max-md:w-full w-1/3 xl:w-1/4 max-md:h-screen shrink-0 bg-zinc-50 border p-4 border-gray-300 transition-all",
+          "max-md:fixed max-md:top-(--header-height) max-md:left-0 max-md:w-full w-1/3 xl:w-1/4 max-md:h-screen shrink-0 bg-zinc-50 border p-4 border-gray-300 transition-all",
           {
             "max-md:translate-y-20 max-md:opacity-0 max-md:scale-98 max-md:pointer-events-none":
               !openFilter,
@@ -141,7 +150,7 @@ function JobsFilterMenu() {
       </aside>
       <button
         type="button"
-        className="md:hidden fixed bottom-4 right-4 size-14 flex items-center justify-center shadow-xl rounded-full bg-secondary cursor-pointer"
+        className="md:hidden fixed bottom-8 right-8 size-14 flex items-center justify-center shadow-xl rounded-full bg-secondary cursor-pointer"
         onClick={() => setOpenFilter((p) => !p)}
       >
         {openFilter ? <X /> : <ListFilter />}

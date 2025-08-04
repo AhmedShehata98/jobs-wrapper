@@ -15,6 +15,7 @@
   --font-noto-sans-arabic: var(--font-noto-sans-arabic);
   --font-comfortaa: var(--font-comfortaa);
   --container-padding: 1rem;
+  --header-height: 75px;
 }
 
 .app-container {
